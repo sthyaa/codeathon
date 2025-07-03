@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ref, push, set, onValue, remove } from 'firebase/database';
-import { db, logout } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import axios from 'axios';
 import ResetMachinesButton from '../ResetMachinesButton';
-import toast from 'react-hot-toast';
 
 import {
   Calendar,
@@ -134,14 +133,8 @@ const AdminDashboard = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taskForm.taskName, taskForm.machineId, taskForm.operatorId]);
 
-  const handleLogout = async () => {
-    const result = await logout();
-    if (result.success) {
-      toast.success('Logged out successfully');
-      navigate('/');
-    } else {
-      toast.error('Logout failed: ' + result.error);
-    }
+  const handleLogout = () => {
+    navigate('/');
   };
 
   const handleInputChange = (e) => {

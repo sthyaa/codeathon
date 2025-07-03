@@ -4,7 +4,6 @@ import { ref, push, set, onValue, remove } from 'firebase/database';
 import { db, logout } from '@/lib/firebase';
 import axios from 'axios';
 import ResetMachinesButton from '../ResetMachinesButton';
-import toast from 'react-hot-toast';
 
 import {
   Calendar,
@@ -135,12 +134,9 @@ const AdminDashboard = () => {
   }, [taskForm.taskName, taskForm.machineId, taskForm.operatorId]);
 
   const handleLogout = async () => {
-    const result = await logout();
-    if (result.success) {
-      toast.success('Logged out successfully');
+    const { success } = await logout();
+    if (success) {
       navigate('/');
-    } else {
-      toast.error('Logout failed: ' + result.error);
     }
   };
 
@@ -333,9 +329,6 @@ const AdminDashboard = () => {
                     />
                     {/* Display predicted time */}
                     {predictedTime !== null && (
-                      <div className="text-center text-black font-medium mb-2">
-                        {predicting ? 'Calculating estimated time...' :
-                          predictedTime === 'Error' ? 'Prediction failed.' :
                           `Estimated Task Time: ${predictedTime} minutes`}
                       </div>
                     )}

@@ -172,7 +172,7 @@ const OperatorDashboard = () => {
                         if (task.taskId) {
                           const { ref: dbRef, set: dbSet } = await import('firebase/database');
                           const { db } = await import('@/lib/firebase');
-                          const taskRef = dbRef(db, `tasks/${task.taskId}`);
+                          const taskRef = dbRef(db, tasks/${task.taskId});
                           await dbSet(taskRef, {
                             ...task,
                             status: 'completed',

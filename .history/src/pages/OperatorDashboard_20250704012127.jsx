@@ -109,7 +109,7 @@ const OperatorDashboard = () => {
             </div>
             <div className="flex items-center space-x-2 bg-gray-800 rounded-full px-4 py-2">
               <Shield className="w-5 h-5 text-green-400" />
-              <span className="text-white font-medium">{operatorData?.safetyScore ? `${operatorData.safetyScore}%` : '--'}</span>
+              <span className="text-white font-medium">{operatorData?.safetyScore ? ${operatorData.safetyScore}% : '--'}</span>
             </div>
             <button onClick={handleLogout} className="ml-4 bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2 rounded-lg font-semibold">
               Logout
@@ -153,10 +153,10 @@ const OperatorDashboard = () => {
               <div key={task.taskId} className="bg-white border-2 border-black rounded-lg p-4 space-y-3 shadow">
                 <h3 className="text-xl font-bold text-black">{task.taskName}</h3>
                 <p><strong>Location:</strong> {task.location}</p>
-                <p><strong>Priority:</strong> {task.priority || 'N/A'}</p>
+                <p><strong>Priority:</strong> {task.priority}</p>
                 <p><strong>Estimated Time:</strong> {task.estimatedTime || 'N/A'}</p>
                 <div className="w-full bg-gray-200 rounded-full h-4 mt-2">
-                  <div className="bg-yellow-400 h-4 rounded-full" style={{ width: `${task.progress || 0}%` }} />
+                  <div className="bg-yellow-400 h-4 rounded-full" style={{ width: ${task.progress || 0}% }} />
                 </div>
                 {(task.progress || 0) < 100 && (
                   <button
@@ -172,7 +172,7 @@ const OperatorDashboard = () => {
                         if (task.taskId) {
                           const { ref: dbRef, set: dbSet } = await import('firebase/database');
                           const { db } = await import('@/lib/firebase');
-                          const taskRef = dbRef(db, `tasks/${task.taskId}`);
+                          const taskRef = dbRef(db, tasks/${task.taskId});
                           await dbSet(taskRef, {
                             ...task,
                             status: 'completed',
