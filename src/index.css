@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design System with HSL Colors */
+@layer base {
+  :root {
+    /* Root palette: Caterpillar Yellow, Black, White */
+    --caterpillar-yellow: 46 100% 53%; /* #FFCD11 */
+    --black: 0 0% 0%; /* #000000 */
+    --white: 0 0% 100%; /* #FFFFFF */
+
+    --background: var(--white);
+    --foreground: var(--black);
+
+    --card: var(--white);
+    --card-foreground: var(--black);
+
+    --popover: var(--white);
+    --popover-foreground: var(--black);
+
+    --primary: var(--caterpillar-yellow);
+    --primary-foreground: var(--black);
+
+    --secondary: var(--black);
+    --secondary-foreground: var(--white);
+
+    --muted: var(--caterpillar-yellow);
+    --muted-foreground: var(--black);
+
+    --accent: var(--caterpillar-yellow);
+    --accent-foreground: var(--black);
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: var(--white);
+
+    --border: var(--black);
+    --input: var(--black);
+    --ring: var(--caterpillar-yellow);
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Dark mode: black background, yellow accents, white text */
+    --background: var(--black);
+    --foreground: var(--white);
+
+    --card: var(--black);
+    --card-foreground: var(--white);
+
+    --popover: var(--black);
+    --popover-foreground: var(--white);
+
+    --primary: var(--caterpillar-yellow);
+    --primary-foreground: var(--black);
+
+    --secondary: var(--white);
+    --secondary-foreground: var(--black);
+
+    --muted: var(--caterpillar-yellow);
+    --muted-foreground: var(--black);
+
+    --accent: var(--caterpillar-yellow);
+    --accent-foreground: var(--black);
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: var(--white);
+
+    --border: var(--caterpillar-yellow);
+    --input: var(--caterpillar-yellow);
+    --ring: var(--caterpillar-yellow);
+
+    --caterpillar-yellow: 46 100% 53%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
