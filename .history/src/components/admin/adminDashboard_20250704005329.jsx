@@ -156,8 +156,8 @@ const AdminDashboard = () => {
           machineId,
           operatorId,
           location,
-          createdAt: new Date().toISOString(),
-          estimatedTime: (typeof predictedTime === 'number' && !isNaN(predictedTime)) ? predictedTime : (Number(predictedTime) || null)
+          estimatedTime: predictedTime, // Store the predicted time
+          createdAt: new Date().toISOString()
         });
 
         // eslint-disable-next-line no-console
@@ -359,69 +359,9 @@ const AdminDashboard = () => {
                               <div><strong>Machine ID: </strong>{task.machineId}</div>
                               <div><strong>Operator ID: </strong>{task.operatorId}</div>
                               <div className="col-span-2"><strong>Location: </strong>{task.location}</div>
-                              {typeof task.estimatedTime === 'number' && !isNaN(task.estimatedTime) ? (
+                              {task.estimatedTime && (
                                 <div className="col-span-2"><strong>Estimated Time: </strong>{task.estimatedTime} minutes</div>
-                              ) : (Number(task.estimatedTime) ? (
-                                <div className="col-span-2"><strong>Estimated Time: </strong>{Number(task.estimatedTime)} minutes</div>
-                              ) : null)}
+                              )}
                             </div>
                           </div>
-                          <div className="flex flex-col items-end space-y-2">
-                            <button
-                              onClick={() => setActiveTab('progress')}
-                              className="mb-2 px-3 py-1 rounded bg-black text-white text-xs font-medium hover:bg-gray-800"
-                            >
-                              View Progress
-                            </button>
-                            <button onClick={() => handleDeleteTask(task.id)} className="text-red-600 hover:text-red-800">
-                              <X className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'progress' && (
-          <div className="space-y-6">
-            <h2 className="text-3xl font-bold">View Progress</h2>
-            {[{ title: 'Operator Progress', Icon: BarChart3 }, { title: 'Machine Progress', Icon: GaugeCircle }, { title: 'Task Progress', Icon: ListChecks }].map(({ title, Icon }) => (
-              <div key={title} className="rounded-lg border-2 border-black bg-white">
-                <div className="px-6 py-4 border-b border-black">
-                  <h3 className="text-lg font-medium flex items-center"><Icon className="h-5 w-5 mr-2" />{title}</h3>
-                </div>
-                <div className="p-6 text-center py-12">
-                  <Icon className="h-12 w-12 mx-auto mb-4 text-[#FFCD11]" />
-                  <p className="text-lg font-medium">No Data Found</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {activeTab === 'reports' && (
-          <div className="space-y-6">
-            <h2 className="text-3xl font-bold">Report Summary</h2>
-            <div className="rounded-lg border-2 border-black bg-white">
-              <div className="px-6 py-4 border-b border-black">
-                <h3 className="text-lg font-medium flex items-center"><FileText className="h-5 w-5 mr-2" />Generated Reports</h3>
-              </div>
-              <div className="p-6 text-center py-12">
-                <FileText className="h-12 w-12 mx-auto mb-4 text-[#FFCD11]" />
-                <p className="text-lg font-medium">No Report Found</p>
-                <p className="text-sm mt-2">Reports will be generated automatically once tasks are completed</p>
-              </div>
-            </div>
-          </div>
-        )}
-      </main>
-    </div>
-  );
-};
-
-export default AdminDashboard;
+                          <div className="flex flex-col items-end space

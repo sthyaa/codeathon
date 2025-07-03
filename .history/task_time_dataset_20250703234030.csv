@@ -1,0 +1,41 @@
+task_type,machine_type,environmental_conditions,operator_level,actual_time_taken
+Excavation,Excavator,Sunny,1,65
+Loading,Loader,Cloudy,2,48
+Hauling,Dump Truck,Rainy,3,70
+Site Grading,Grader,Sunny,2,55
+Material Handling,Excavator,Dusty,1,60
+Maintenance,Loader,Sunny,3,35
+Inspection,Grader,Cloudy,2,30
+Fueling,Dump Truck,Sunny,1,20
+Operator Training,Excavator,Windy,1,80
+Excavation,Excavator,Rainy,2,68
+Loading,Loader,Sunny,3,45
+Hauling,Dump Truck,Cloudy,2,65
+Site Grading,Grader,Dusty,1,58
+Material Handling,Excavator,Sunny,2,62
+Maintenance,Loader,Rainy,3,38
+Inspection,Grader,Sunny,1,28
+Fueling,Dump Truck,Cloudy,2,22
+Operator Training,Excavator,Sunny,1,85
+Excavation,Excavator,Sunny,2,66
+Loading,Loader,Cloudy,1,50
+Hauling,Dump Truck,Rainy,2,72
+Site Grading,Grader,Sunny,3,54
+Material Handling,Excavator,Dusty,2,61
+Maintenance,Loader,Sunny,1,36
+Inspection,Grader,Cloudy,3,31
+Fueling,Dump Truck,Sunny,2,19
+Operator Training,Excavator,Windy,3,78
+Excavation,Excavator,Rainy,1,67
+Loading,Loader,Sunny,2,46
+Hauling,Dump Truck,Cloudy,3,64
+Site Grading,Grader,Dusty,2,59
+Material Handling,Excavator,Sunny,1,63
+Maintenance,Loader,Rainy,2,39
+Inspection,Grader,Sunny,3,29
+Fueling,Dump Truck,Cloudy,1,23
+Operator Training,Excavator,Sunny,2,83
+Excavation,Excavator,Sunny,3,64
+Loading,Loader,Cloudy,2,49
+Hauling,Dump Truck,Rainy,1,71
+Site Grading,Grader,Sunny,2,56

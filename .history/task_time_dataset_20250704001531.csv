@@ -1,0 +1,42 @@
+task_type,machine_type,machine_fuel_used,engine_hours,curr_load_cycles,idling_time,environmental_conditions,operator_level,actual_time_taken
+Excavation,Excavator,14.2,1200,35,50,Sunny,1,65
+Loading,Loader,10.5,900,28,30,Cloudy,2,48
+Hauling,Dump Truck,18.0,2000,40,60,Rainy,3,70
+Site Grading,Grader,12.0,1500,25,20,Sunny,2,55
+Material Handling,Excavator,13.5,1100,30,35,Dusty,1,60
+Maintenance,Loader,9.0,800,10,15,Sunny,3,35
+Inspection,Grader,8.5,700,5,10,Cloudy,2,30
+Fueling,Dump Truck,20.0,2100,0,5,Sunny,1,20
+Operator Training,Excavator,15.0,1300,20,40,Windy,1,80
+Excavation,Excavator,13.0,1250,32,45,Rainy,2,68
+Loading,Loader,11.2,950,29,28,Sunny,3,45
+Hauling,Dump Truck,17.5,1950,38,55,Cloudy,2,65
+Site Grading,Grader,12.8,1550,27,22,Dusty,1,58
+Material Handling,Excavator,14.0,1150,31,33,Sunny,2,62
+Maintenance,Loader,9.5,850,12,18,Rainy,3,38
+Inspection,Grader,8.0,720,6,12,Sunny,1,28
+Fueling,Dump Truck,19.5,2050,0,6,Cloudy,2,22
+Operator Training,Excavator,16.0,1350,22,42,Sunny,1,85
+Excavation,Excavator,15.1,1220,36,52,Sunny,2,66
+Loading,Loader,10.8,910,27,29,Cloudy,1,50
+Hauling,Dump Truck,18.3,2020,41,62,Rainy,2,72
+Site Grading,Grader,12.3,1510,26,21,Sunny,3,54
+Material Handling,Excavator,13.8,1120,29,36,Dusty,2,61
+Maintenance,Loader,9.2,810,11,16,Sunny,1,36
+Inspection,Grader,8.7,710,4,11,Cloudy,3,31
+Fueling,Dump Truck,20.2,2120,0,4,Sunny,2,19
+Operator Training,Excavator,15.3,1320,21,39,Windy,3,78
+Excavation,Excavator,13.4,1260,33,44,Rainy,1,67
+Loading,Loader,11.5,960,30,27,Sunny,2,46
+Hauling,Dump Truck,17.8,1960,39,54,Cloudy,3,64
+Site Grading,Grader,13.0,1560,28,23,Dusty,2,59
+Material Handling,Excavator,14.3,1160,32,34,Sunny,1,63
+Maintenance,Loader,9.7,860,13,19,Rainy,2,39
+Inspection,Grader,8.2,730,7,13,Sunny,3,29
+Fueling,Dump Truck,19.8,2060,0,7,Cloudy,1,23
+Operator Training,Excavator,16.2,1360,23,43,Sunny,2,83
+Excavation,Excavator,15.5,1240,37,53,Sunny,3,64
+Loading,Loader,10.9,920,28,31,Cloudy,2,49
+Hauling,Dump Truck,18.1,2030,42,61,Rainy,1,71
+Site Grading,Grader,12.5,1520,27,24,Sunny,2,56
+Try Gradient Boosting (HistGradientBoostingRegressor, XGBoost, or LightGBM) for best performance on tabular data.

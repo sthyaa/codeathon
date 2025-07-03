@@ -156,8 +156,7 @@ const AdminDashboard = () => {
           machineId,
           operatorId,
           location,
-          createdAt: new Date().toISOString(),
-          estimatedTime: (typeof predictedTime === 'number' && !isNaN(predictedTime)) ? predictedTime : (Number(predictedTime) || null)
+          createdAt: new Date().toISOString()
         });
 
         // eslint-disable-next-line no-console
@@ -359,11 +358,6 @@ const AdminDashboard = () => {
                               <div><strong>Machine ID: </strong>{task.machineId}</div>
                               <div><strong>Operator ID: </strong>{task.operatorId}</div>
                               <div className="col-span-2"><strong>Location: </strong>{task.location}</div>
-                              {typeof task.estimatedTime === 'number' && !isNaN(task.estimatedTime) ? (
-                                <div className="col-span-2"><strong>Estimated Time: </strong>{task.estimatedTime} minutes</div>
-                              ) : (Number(task.estimatedTime) ? (
-                                <div className="col-span-2"><strong>Estimated Time: </strong>{Number(task.estimatedTime)} minutes</div>
-                              ) : null)}
                             </div>
                           </div>
                           <div className="flex flex-col items-end space-y-2">

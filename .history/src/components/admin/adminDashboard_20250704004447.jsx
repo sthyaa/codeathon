@@ -156,8 +156,7 @@ const AdminDashboard = () => {
           machineId,
           operatorId,
           location,
-          createdAt: new Date().toISOString(),
-          estimatedTime: (typeof predictedTime === 'number' && !isNaN(predictedTime)) ? predictedTime : (Number(predictedTime) || null)
+          createdAt: new Date().toISOString()
         });
 
         // eslint-disable-next-line no-console
@@ -176,20 +175,18 @@ const AdminDashboard = () => {
     await remove(taskRef);
   };
 
-  // Map machine types to real-world task names for the dropdown
-  const MACHINE_TYPE_TO_TASK = {
-    'Excavator': 'Excavation',
-    'Bulldozer': 'Bulldozing',
-    'Backhoe': 'Backhoeing',
-    'Loader': 'Loading',
-    'Dump Truck': 'Hauling',
-    'Grader': 'Site Grading',
-    // Add more mappings as needed
-  };
-  const availableMachineTypes = Array.from(new Set(machines.map(m => m.type)));
-  const TASK_OPTIONS = availableMachineTypes
-    .map(type => MACHINE_TYPE_TO_TASK[type])
-    .filter(Boolean);
+  const TASK_OPTIONS = [
+    'Excavation',
+    'Loading',
+    'Hauling',
+    'Site Grading',
+    'Material Handling',
+    'Maintenance',
+    'Inspection',
+    'Fueling',
+    'Operator Training',
+    'Other'
+  ];
 
   return (
     <div className="min-h-screen bg-white text-black">
@@ -359,11 +356,6 @@ const AdminDashboard = () => {
                               <div><strong>Machine ID: </strong>{task.machineId}</div>
                               <div><strong>Operator ID: </strong>{task.operatorId}</div>
                               <div className="col-span-2"><strong>Location: </strong>{task.location}</div>
-                              {typeof task.estimatedTime === 'number' && !isNaN(task.estimatedTime) ? (
-                                <div className="col-span-2"><strong>Estimated Time: </strong>{task.estimatedTime} minutes</div>
-                              ) : (Number(task.estimatedTime) ? (
-                                <div className="col-span-2"><strong>Estimated Time: </strong>{Number(task.estimatedTime)} minutes</div>
-                              ) : null)}
                             </div>
                           </div>
                           <div className="flex flex-col items-end space-y-2">
