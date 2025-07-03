@@ -70,7 +70,8 @@ const Training = () => {
   const tabDefs = [
     { id: 'overview', label: 'Overview', icon: Monitor },
     { id: 'courses', label: 'Courses', icon: BookOpen },
-    { id: 'instructors', label: 'Instructors', icon: Users }
+    { id: 'instructors', label: 'Instructors', icon: Users },
+    { id: 'progress', label: 'Progress', icon: BarChart3 }
   ];
 
   const learningPaths = [
@@ -521,6 +522,8 @@ const Training = () => {
           />
         ) : activeTab === 'instructors' ? (
           <TrainingInstructors instructors={instructors} />
+        ) : activeTab === 'progress' ? (
+          <TrainingProgress userProgress={userProgress} />
         ) : null}
       </main>
     </div>

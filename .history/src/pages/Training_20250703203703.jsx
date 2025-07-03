@@ -70,7 +70,9 @@ const Training = () => {
   const tabDefs = [
     { id: 'overview', label: 'Overview', icon: Monitor },
     { id: 'courses', label: 'Courses', icon: BookOpen },
-    { id: 'instructors', label: 'Instructors', icon: Users }
+    { id: 'instructors', label: 'Instructors', icon: Users },
+    { id: 'paths', label: 'Learning Paths', icon: Target },
+    { id: 'progress', label: 'Progress', icon: BarChart3 }
   ];
 
   const learningPaths = [
@@ -387,13 +389,15 @@ const Training = () => {
 
   // Load video progress from Firebase on mount
   useEffect(() => {
+    let isMounted = true;
     const fetchProgress = async () => {
+      setLoadingProgress(true);
       const user = auth.currentUser;
       if (user) {
         const progressSnap = await get(dbRef(db, `users/${user.uid}/videoProgress`));
         if (progressSnap.exists()) {
           const progress = progressSnap.val();
-          if (!selectedCourse) {
+          if (!selectedCourse && isMounted) {
             setVideoProgress(progress);
           }
           // Calculate and set user progress stats after loading
@@ -406,42 +410,52 @@ const Training = () => {
               else if (vid.percent > 0 && vid.percent < 100 && vid.completed === false) inProgress++;
             }
           }
-          setUserProgress(up => ({
-            ...up,
-            totalCourses: courses.length,
-            completed,
-            inProgress
-          }));
+          if (isMounted) {
+            setUserProgress(up => ({
+              ...up,
+              totalCourses: courses.length,
+              completed,
+              inProgress
+            }));
+          }
         } else {
-          if (!selectedCourse) {
+          if (!selectedCourse && isMounted) {
             setVideoProgress({});
           }
-          setUserProgress(up => ({ ...up, totalCourses: courses.length, completed: 0, inProgress: 0 }));
+          if (isMounted) {
+            setUserProgress(up => ({ ...up, totalCourses: courses.length, completed: 0, inProgress: 0 }));
+          }
         }
       }
+      if (isMounted) setLoadingProgress(false);
     };
     fetchProgress();
-    // Optionally, listen for auth state changes if needed
+    return () => { isMounted = false; };
   }, [courses, selectedCourse]);
 
+  // Remove the second loadingProgress state update from fetchUserProgress
   useEffect(() => {
+    let isMounted = true;
     const fetchUserProgress = async () => {
+      setLoadingProgress(true);
       setProgressError(null);
       const user = auth.currentUser;
       if (user) {
         try {
           const progressSnap = await get(dbRef(db, `users/${user.uid}/progress`));
-          if (progressSnap.exists()) {
+          if (progressSnap.exists() && isMounted) {
             setUserProgress(progressSnap.val());
-          } else {
+          } else if (isMounted) {
             setProgressError('No progress data found.');
           }
         } catch (err) {
-          setProgressError('Error fetching progress data.');
+          if (isMounted) setProgressError('Error fetching progress data.');
         }
       }
+      if (isMounted) setLoadingProgress(false);
     };
     fetchUserProgress();
+    return () => { isMounted = false; };
   }, []);
 
   // Save progress for the current video to Firebase on tab/course change or page unload
@@ -491,7 +505,9 @@ const Training = () => {
       <TrainingHeader userProgress={userProgress} />
       <TrainingTabs activeTab={activeTab} handleTabChange={handleTabChange} tabDefs={tabDefs} />
       <main className="p-6">
-        {activeTab === 'overview' ? (
+        {loadingProgress ? (
+          <div className="text-center text-gray-500 py-12">Loading your stats...</div>
+        ) : activeTab === 'overview' ? (
           progressError ? (
             <div className="text-center text-red-500 py-12">{progressError}</div>
           ) : (
@@ -521,6 +537,10 @@ const Training = () => {
           />
         ) : activeTab === 'instructors' ? (
           <TrainingInstructors instructors={instructors} />
+        ) : activeTab === 'paths' ? (
+          <TrainingPaths learningPaths={learningPaths} />
+        ) : activeTab === 'progress' ? (
+          <TrainingProgress userProgress={userProgress} />
         ) : null}
       </main>
     </div>

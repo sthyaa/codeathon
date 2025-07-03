@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { ref, push, set, onValue, remove } from 'firebase/database';
 import { db } from '@/lib/firebase';
 import axios from 'axios';
-import ResetMachinesButton from '../ResetMachinesButton';
 
 import {
   Calendar,
@@ -242,16 +241,13 @@ const AdminDashboard = () => {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-3xl font-bold">Schedule Management</h2>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => setShowTaskForm(true)}
-                  className="px-4 py-2 rounded-lg font-medium flex items-center space-x-2"
-                  style={{ backgroundColor: '#FFCD11', color: '#000000' }}
-                >
-                  <Plus className="h-4 w-4" /><span>Add New Task</span>
-                </button>
-                {/* <ResetMachinesButton /> */}
-              </div>
+              <button
+                onClick={() => setShowTaskForm(true)}
+                className="px-4 py-2 rounded-lg font-medium flex items-center space-x-2"
+                style={{ backgroundColor: '#FFCD11', color: '#000000' }}
+              >
+                <Plus className="h-4 w-4" /><span>Add New Task</span>
+              </button>
             </div>
 
             {showTaskForm && (

@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ref, push, set, onValue, remove } from 'firebase/database';
 import { db } from '@/lib/firebase';
-import axios from 'axios';
-import ResetMachinesButton from '../ResetMachinesButton';
 
 import {
   Calendar,
@@ -29,16 +27,8 @@ const AdminDashboard = () => {
     operatorId: '',
     location: ''
   });
-  const [predictedTime, setPredictedTime] = useState(null);
-  const [predicting, setPredicting] = useState(false);
 
   const navigate = useNavigate();
-
-  // Helper to generate random environmental condition
-  const ENV_OPTIONS = ['Sunny', 'Rainy', 'Cloudy', 'Windy', 'Foggy', 'Dusty'];
-  function getRandomEnv() {
-    return ENV_OPTIONS[Math.floor(Math.random() * ENV_OPTIONS.length)];
-  }
 
   useEffect(() => {
     const tasksRef = ref(db, 'tasks/');
@@ -84,54 +74,6 @@ const AdminDashboard = () => {
       unsubscribeOperators();
     };
   }, []);
-
-  // Predict task time when all fields are selected
-  useEffect(() => {
-    const fetchPrediction = async () => {
-      const { taskName, machineId, operatorId } = taskForm;
-      if (taskName && machineId && operatorId) {
-        // Find machine and operator objects
-        const machine = machines.find(m => m.machineid === machineId);
-        const operator = operators.find(o => (o.id || o.uid) === operatorId);
-        if (!machine || !operator) return;
-        // Check for missing machine data
-        if (
-          machine.fuelUsed == null && machine.fuel_used == null ||
-          machine.engineHours == null && machine.engine_hours == null ||
-          machine.loadCycles == null && machine.curr_load_cycles == null ||
-          machine.idlingTime == null && machine.idling_time == null
-        ) {
-          setPredictedTime('Machine data incomplete');
-          return;
-        }
-        // Prepare payload for prediction (use only real values)
-        const payload = {
-          task_type: taskName,
-          machine_type: machine.type,
-          machine_fuel_used: machine.fuelUsed ?? machine.fuel_used,
-          engine_hours: machine.engineHours ?? machine.engine_hours,
-          curr_load_cycles: machine.loadCycles ?? machine.curr_load_cycles,
-          idling_time: machine.idlingTime ?? machine.idling_time,
-          environmental_conditions: getRandomEnv(),
-          operator_level: operator.level || 1
-        };
-        setPredicting(true);
-        setPredictedTime(null);
-        try {
-          const res = await axios.post('http://localhost:5000/predict', payload);
-          setPredictedTime(res.data.predicted_time);
-        } catch (err) {
-          setPredictedTime('Error');
-        } finally {
-          setPredicting(false);
-        }
-      } else {
-        setPredictedTime(null);
-      }
-    };
-    fetchPrediction();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [taskForm.taskName, taskForm.machineId, taskForm.operatorId]);
 
   const handleLogout = () => {
     navigate('/');
@@ -242,16 +184,13 @@ const AdminDashboard = () => {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-3xl font-bold">Schedule Management</h2>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => setShowTaskForm(true)}
-                  className="px-4 py-2 rounded-lg font-medium flex items-center space-x-2"
-                  style={{ backgroundColor: '#FFCD11', color: '#000000' }}
-                >
-                  <Plus className="h-4 w-4" /><span>Add New Task</span>
-                </button>
-                {/* <ResetMachinesButton /> */}
-              </div>
+              <button
+                onClick={() => setShowTaskForm(true)}
+                className="px-4 py-2 rounded-lg font-medium flex items-center space-x-2"
+                style={{ backgroundColor: '#FFCD11', color: '#000000' }}
+              >
+                <Plus className="h-4 w-4" /><span>Add New Task</span>
+              </button>
             </div>
 
             {showTaskForm && (
@@ -321,14 +260,6 @@ const AdminDashboard = () => {
                       className="w-full px-3 py-2 rounded-lg border-2 border-black"
                       required
                     />
-                    {/* Display predicted time */}
-                    {predictedTime !== null && (
-                      <div className="text-center text-black font-medium mb-2">
-                        {predicting ? 'Calculating estimated time...' :
-                          predictedTime === 'Error' ? 'Prediction failed.' :
-                          `Estimated Task Time: ${predictedTime} minutes`}
-                      </div>
-                    )}
                     <div className="flex space-x-3 pt-4">
                       <button type="submit" className="flex-1 py-2 px-4 rounded-lg font-medium bg-[#FFCD11] text-black">Create Task</button>
                       <button type="button" onClick={() => setShowTaskForm(false)} className="flex-1 py-2 px-4 rounded-lg font-medium bg-black text-white">Cancel</button>
@@ -358,17 +289,9 @@ const AdminDashboard = () => {
                               <div className="col-span-2"><strong>Location: </strong>{task.location}</div>
                             </div>
                           </div>
-                          <div className="flex flex-col items-end space-y-2">
-                            <button
-                              onClick={() => setActiveTab('progress')}
-                              className="mb-2 px-3 py-1 rounded bg-black text-white text-xs font-medium hover:bg-gray-800"
-                            >
-                              View Progress
-                            </button>
-                            <button onClick={() => handleDeleteTask(task.id)} className="text-red-600 hover:text-red-800">
-                              <X className="h-4 w-4" />
-                            </button>
-                          </div>
+                          <button onClick={() => handleDeleteTask(task.id)} className="text-red-600 hover:text-red-800">
+                            <X className="h-4 w-4" />
+                          </button>
                         </div>
                       </div>
                     ))}

@@ -19,7 +19,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       {/* TEMP: Button to reset all machines to initial state, remove after use */}
-      {/* <ResetMachinesButton /> */}
+     // <ResetMachinesButton />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />

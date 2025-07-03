@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { ref, push, set, onValue, remove } from 'firebase/database';
 import { db } from '@/lib/firebase';
 import axios from 'axios';
-import ResetMachinesButton from '../ResetMachinesButton';
 
 import {
   Calendar,
@@ -94,24 +93,14 @@ const AdminDashboard = () => {
         const machine = machines.find(m => m.machineid === machineId);
         const operator = operators.find(o => (o.id || o.uid) === operatorId);
         if (!machine || !operator) return;
-        // Check for missing machine data
-        if (
-          machine.fuelUsed == null && machine.fuel_used == null ||
-          machine.engineHours == null && machine.engine_hours == null ||
-          machine.loadCycles == null && machine.curr_load_cycles == null ||
-          machine.idlingTime == null && machine.idling_time == null
-        ) {
-          setPredictedTime('Machine data incomplete');
-          return;
-        }
-        // Prepare payload for prediction (use only real values)
+        // Prepare payload for prediction
         const payload = {
           task_type: taskName,
           machine_type: machine.type,
-          machine_fuel_used: machine.fuelUsed ?? machine.fuel_used,
-          engine_hours: machine.engineHours ?? machine.engine_hours,
-          curr_load_cycles: machine.loadCycles ?? machine.curr_load_cycles,
-          idling_time: machine.idlingTime ?? machine.idling_time,
+          machine_fuel_used: machine.fuelUsed || 10, // fallback if missing
+          engine_hours: machine.engineHours || 1000,
+          curr_load_cycles: machine.loadCycles || 10,
+          idling_time: machine.idlingTime || 10,
           environmental_conditions: getRandomEnv(),
           operator_level: operator.level || 1
         };
@@ -242,16 +231,13 @@ const AdminDashboard = () => {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-3xl font-bold">Schedule Management</h2>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => setShowTaskForm(true)}
-                  className="px-4 py-2 rounded-lg font-medium flex items-center space-x-2"
-                  style={{ backgroundColor: '#FFCD11', color: '#000000' }}
-                >
-                  <Plus className="h-4 w-4" /><span>Add New Task</span>
-                </button>
-                {/* <ResetMachinesButton /> */}
-              </div>
+              <button
+                onClick={() => setShowTaskForm(true)}
+                className="px-4 py-2 rounded-lg font-medium flex items-center space-x-2"
+                style={{ backgroundColor: '#FFCD11', color: '#000000' }}
+              >
+                <Plus className="h-4 w-4" /><span>Add New Task</span>
+              </button>
             </div>
 
             {showTaskForm && (
@@ -416,4 +402,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default AdminDas

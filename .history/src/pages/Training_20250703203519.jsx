@@ -70,7 +70,9 @@ const Training = () => {
   const tabDefs = [
     { id: 'overview', label: 'Overview', icon: Monitor },
     { id: 'courses', label: 'Courses', icon: BookOpen },
-    { id: 'instructors', label: 'Instructors', icon: Users }
+    { id: 'instructors', label: 'Instructors', icon: Users },
+    { id: 'paths', label: 'Learning Paths', icon: Target },
+    { id: 'progress', label: 'Progress', icon: BarChart3 }
   ];
 
   const learningPaths = [
@@ -388,6 +390,7 @@ const Training = () => {
   // Load video progress from Firebase on mount
   useEffect(() => {
     const fetchProgress = async () => {
+      setLoadingProgress(true);
       const user = auth.currentUser;
       if (user) {
         const progressSnap = await get(dbRef(db, `users/${user.uid}/videoProgress`));
@@ -419,13 +422,16 @@ const Training = () => {
           setUserProgress(up => ({ ...up, totalCourses: courses.length, completed: 0, inProgress: 0 }));
         }
       }
+      setLoadingProgress(false);
     };
     fetchProgress();
     // Optionally, listen for auth state changes if needed
   }, [courses, selectedCourse]);
 
+  // Remove the second loadingProgress state update from fetchUserProgress
   useEffect(() => {
     const fetchUserProgress = async () => {
+      setLoadingProgress(true);
       setProgressError(null);
       const user = auth.currentUser;
       if (user) {
@@ -440,6 +446,7 @@ const Training = () => {
           setProgressError('Error fetching progress data.');
         }
       }
+      setLoadingProgress(false);
     };
     fetchUserProgress();
   }, []);
@@ -491,7 +498,9 @@ const Training = () => {
       <TrainingHeader userProgress={userProgress} />
       <TrainingTabs activeTab={activeTab} handleTabChange={handleTabChange} tabDefs={tabDefs} />
       <main className="p-6">
-        {activeTab === 'overview' ? (
+        {loadingProgress ? (
+          <div className="text-center text-gray-500 py-12">Loading your stats...</div>
+        ) : activeTab === 'overview' ? (
           progressError ? (
             <div className="text-center text-red-500 py-12">{progressError}</div>
           ) : (
@@ -521,6 +530,10 @@ const Training = () => {
           />
         ) : activeTab === 'instructors' ? (
           <TrainingInstructors instructors={instructors} />
+        ) : activeTab === 'paths' ? (
+          <TrainingPaths learningPaths={learningPaths} />
+        ) : activeTab === 'progress' ? (
+          <TrainingProgress userProgress={userProgress} />
         ) : null}
       </main>
     </div>

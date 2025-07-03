@@ -250,7 +250,8 @@ const AdminDashboard = () => {
                 >
                   <Plus className="h-4 w-4" /><span>Add New Task</span>
                 </button>
-                {/* <ResetMachinesButton /> */}
+                //
+                <ResetMachinesButton />
               </div>
             </div>
 

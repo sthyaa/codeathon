@@ -41,13 +41,12 @@ import { auth, db } from '../lib/firebase';
 import { ref as dbRef, get, set, update } from 'firebase/database';
 import CourseCard from '../components/Training/CourseCard';
 import InstructorCard from '../components/Training/InstructorCard';
-import LearningPathCard from '../components/Training/LearningPathCard';
 import TrainingHeader from '../components/Training/TrainingHeader';
 import TrainingTabs from '../components/Training/TrainingTabs';
 import TrainingOverview from '../components/Training/TrainingOverview';
 import TrainingCourses from '../components/Training/TrainingCourses';
 import TrainingInstructors from '../components/Training/TrainingInstructors';
-import TrainingPaths from '../components/Training/TrainingPaths';
+// import TrainingPaths from '../components/Training/TrainingPaths';
 import TrainingProgress from '../components/Training/TrainingProgress';
 
 const Training = () => {
@@ -66,6 +65,9 @@ const Training = () => {
   const [progressInterval, setProgressInterval] = useState(null);
   const [loadingProgress, setLoadingProgress] = useState(true);
   const [progressError, setProgressError] = useState(null);
+  const [courses, setCourses] = useState([]);
+  const [instructors, setInstructors] = useState([]);
+  // const [learningPaths, setLearningPaths] = useState([]); // If you need learning paths, add this line
 
   const tabDefs = [
     { id: 'overview', label: 'Overview', icon: Monitor },
@@ -73,232 +75,24 @@ const Training = () => {
     { id: 'instructors', label: 'Instructors', icon: Users }
   ];
 
-  const learningPaths = [
-    {
-      id: 1,
-      title: 'New Operator Certification',
-      description: 'Complete certification program for new CAT machine operators',
-      duration: '40 hours',
-      level: 'Beginner',
-      progress: 100,
-      courses: 8,
-      icon: Award,
-      color: 'bg-green-500'
-    },
-    {
-      id: 2,
-      title: 'Safety Excellence Program',
-      description: 'Advanced safety protocols and hazard recognition',
-      duration: '20 hours',
-      level: 'All Levels',
-      progress: 60,
-      courses: 6,
-      icon: Shield,
-      color: 'bg-red-500'
-    },
-    {
-      id: 3,
-      title: 'Maintenance Mastery',
-      description: 'Learn preventive maintenance and troubleshooting',
-      duration: '30 hours',
-      level: 'Intermediate',
-      progress: 25,
-      courses: 10,
-      icon: Wrench,
-      color: 'bg-blue-500'
-    },
-    {
-      id: 4,
-      title: 'Productivity Optimization',
-      description: 'Advanced techniques for maximum efficiency',
-      duration: '25 hours',
-      level: 'Advanced',
-      progress: 0,
-      courses: 7,
-      icon: TrendingUp,
-      color: 'bg-purple-500'
-    }
-  ];
+  // TODO: Fetch real data from Firebase or backend here
+  useEffect(() => {
+    const fetchCourses = async () => {
+      // Replace with your Firebase fetching logic
+      // Example: const snapshot = await get(dbRef(db, 'courses'));
+      // if (snapshot.exists()) setCourses(Object.values(snapshot.val()));
+    };
+    fetchCourses();
+  }, []);
 
-  const courses = [
-    {
-      id: 1,
-      title: 'How to Use 2D Grade Control on Cat Excavator',
-      type: 'video',
-      duration: '',
-      difficulty: 'Beginner',
-      rating: 4.9,
-      enrolled: 3200,
-      completed: false,
-      description: '',
-      videoUrl: 'https://www.youtube.com/embed/ofVCAi96S98',
-      instructor: 'Ziegler CAT',
-      topics: ['2D Grade Control', 'Excavator']
-    },
-    {
-      id: 2,
-      title: 'How to Use Payload Feature on Cat Excavator',
-      type: 'video',
-      duration: '',
-      difficulty: 'Beginner',
-      rating: 4.8,
-      enrolled: 2100,
-      completed: false,
-      description: '',
-      videoUrl: 'https://www.youtube.com/embed/QEXjxF7LLPU',
-      instructor: 'Ziegler CAT',
-      topics: ['Payload', 'Excavator']
-    },
-    {
-      id: 3,
-      title: 'Safety Features in Cat D3 Series Machines',
-      type: 'video',
-      duration: '',
-      difficulty: 'Beginner',
-      rating: 4.7,
-      enrolled: 1800,
-      completed: false,
-      description: '',
-      videoUrl: 'https://www.youtube.com/embed/wOCgGVrArCQ',
-      instructor: 'Ziegler CAT',
-      topics: ['Safety', 'D3 Series']
-    },
-    {
-      id: 4,
-      title: 'Proper turn technique on a Compact Track Loader',
-      type: 'video',
-      duration: '',
-      difficulty: 'Beginner',
-      rating: 4.8,
-      enrolled: 2500,
-      completed: false,
-      description: '',
-      videoUrl: 'https://www.youtube.com/embed/8IpqOs7h3f4',
-      instructor: 'Ziegler CAT',
-      topics: ['Turn Technique', 'Track Loader']
-    },
-    {
-      id: 5,
-      title: 'Loader Arm, Safety Lock Operation on Cat Skids and Track Loaders',
-      type: 'video',
-      duration: '',
-      difficulty: 'Beginner',
-      rating: 4.8,
-      enrolled: 2500,
-      completed: false,
-      description: '',
-      videoUrl: 'https://www.youtube.com/embed/GLAO3EZsLTo',
-      instructor: 'Ziegler CAT',
-      topics: ['Loader Arm', 'Safety Lock']
-    },
-    {
-      id: 6,
-      title: 'Safety Features - Cat Next Gen Excavators',
-      type: 'video',
-      duration: '',
-      difficulty: 'Beginner',
-      rating: 4.8,
-      enrolled: 2500,
-      completed: false,
-      description: '',
-      videoUrl: 'https://www.youtube.com/embed/KtKorcGeywg',
-      instructor: 'Ziegler CAT',
-      topics: ['Safety', 'Next Gen Excavators']
-    },
-    {
-      id: 7,
-      title: '2D Grade Control - Cat Next Gen Excavators',
-      type: 'video',
-      duration: '',
-      difficulty: 'Beginner',
-      rating: 4.8,
-      enrolled: 2500,
-      completed: false,
-      description: '',
-      videoUrl: 'https://www.youtube.com/embed/-9wMbrN8XL8',
-      instructor: 'Ziegler CAT',
-      topics: ['2D Grade Control', 'Next Gen Excavators']
-    },
-    {
-      id: 8,
-      title: 'Payload Feature - Cat Next Gen Excavators',
-      type: 'video',
-      duration: '',
-      difficulty: 'Beginner',
-      rating: 4.8,
-      enrolled: 2500,
-      completed: false,
-      description: '',
-      videoUrl: 'https://www.youtube.com/embed/CxPJ5uOA7bU',
-      instructor: 'Ziegler CAT',
-      topics: ['Payload', 'Next Gen Excavators']
-    },
-    {
-      id: 9,
-      title: 'E Fence Feature - Cat Next Gen Excavators',
-      type: 'video',
-      duration: '',
-      difficulty: 'Beginner',
-      rating: 4.8,
-      enrolled: 2500,
-      completed: false,
-      description: '',
-      videoUrl: 'https://www.youtube.com/embed/17z3VYlDVWQ',
-      instructor: 'Ziegler CAT',
-      topics: ['E Fence', 'Next Gen Excavators']
-    },
-    {
-      id: 10,
-      title: 'Cat Next Generation Excavators - Machine Walk Around',
-      type: 'video',
-      duration: '',
-      difficulty: 'Beginner',
-      rating: 4.8,
-      enrolled: 2500,
-      completed: false,
-      description: '',
-      videoUrl: 'https://www.youtube.com/embed/w8Y0upW5uvo',
-      instructor: 'Ziegler CAT',
-      topics: ['Walk Around', 'Next Gen Excavators']
-    }
-    // ...add more videos as needed from the playlist
-  ];
-
-  const instructors = [
-    {
-      id: 1,
-      name: 'Mike Johnson',
-      specialty: 'Machine Operations',
-      rating: 4.9,
-      experience: '15 years',
-      students: 2500,
-      avatar: '/api/placeholder/100/100',
-      available: true,
-      nextSlot: '2:00 PM Today'
-    },
-    {
-      id: 2,
-      name: 'Sarah Chen',
-      specialty: 'Hydraulic Systems',
-      rating: 4.8,
-      experience: '12 years',
-      students: 1800,
-      avatar: '/api/placeholder/100/100',
-      available: false,
-      nextSlot: '9:00 AM Tomorrow'
-    },
-    {
-      id: 3,
-      name: 'David Miller',
-      specialty: 'Safety Training',
-      rating: 4.9,
-      experience: '20 years',
-      students: 3200,
-      avatar: '/api/placeholder/100/100',
-      available: true,
-      nextSlot: '4:00 PM Today'
-    }
-  ];
+  useEffect(() => {
+    const fetchInstructors = async () => {
+      // Replace with your Firebase fetching logic
+      // Example: const snapshot = await get(dbRef(db, 'instructors'));
+      // if (snapshot.exists()) setInstructors(Object.values(snapshot.val()));
+    };
+    fetchInstructors();
+  }, []);
 
   const getTypeIcon = (type) => {
     switch(type) {

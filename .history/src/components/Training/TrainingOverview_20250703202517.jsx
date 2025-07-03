@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Play, CheckCircle, ChevronRight } from 'lucide-react';
+import { BookOpen, Play, CheckCircle, ChevronRight, Star } from 'lucide-react';
 
 const TrainingOverview = ({ userProgress, courses, getTypeIcon, videoProgress, onContinueCourse }) => {
   // Find courses that are actually in progress (percent > 0 and < 100, not completed)
@@ -82,6 +82,26 @@ const TrainingOverview = ({ userProgress, courses, getTypeIcon, videoProgress, o
                 </button>
               ))
             )}
+          </div>
+        </div>
+        <div className="bg-white rounded-xl p-6 shadow-lg">
+          <h3 className="text-xl font-semibold text-black mb-4">Recommended for You</h3>
+          <div className="space-y-4">
+            {courses.filter(course => course.difficulty === 'Intermediate').slice(0, 3).map(course => (
+              <div key={course.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                <div className="w-12 h-12 bg-gray-300 rounded-lg flex items-center justify-center">
+                  {React.createElement(getTypeIcon(course.type), { className: "w-6 h-6 text-gray-600" })}
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-medium text-black">{course.title}</h4>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                    <span className="text-sm text-gray-600">{course.rating}</span>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-gray-400" />
+              </div>
+            ))}
           </div>
         </div>
       </div>

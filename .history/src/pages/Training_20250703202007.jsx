@@ -70,7 +70,9 @@ const Training = () => {
   const tabDefs = [
     { id: 'overview', label: 'Overview', icon: Monitor },
     { id: 'courses', label: 'Courses', icon: BookOpen },
-    { id: 'instructors', label: 'Instructors', icon: Users }
+    { id: 'instructors', label: 'Instructors', icon: Users },
+    { id: 'paths', label: 'Learning Paths', icon: Target },
+    { id: 'progress', label: 'Progress', icon: BarChart3 }
   ];
 
   const learningPaths = [
@@ -344,16 +346,10 @@ const Training = () => {
         const current = player.getCurrentTime();
         if (duration > 0) {
           const percent = Math.floor((current / duration) * 100);
-          // Use functional update to avoid race with Firebase reloads
-          setVideoProgress(prev => {
+          setVideoProgress((prev) => {
             const prevPercent = prev[courseId]?.percent || 0;
-            // Only update if percent increased and not completed
             if (percent > prevPercent && percent < 100) {
               return { ...prev, [courseId]: { percent, completed: false } };
-            }
-            // If completed, set completed true
-            if (percent >= 100 && (!prev[courseId]?.completed)) {
-              return { ...prev, [courseId]: { percent: 100, completed: true } };
             }
             return prev;
           });
@@ -393,9 +389,7 @@ const Training = () => {
         const progressSnap = await get(dbRef(db, `users/${user.uid}/videoProgress`));
         if (progressSnap.exists()) {
           const progress = progressSnap.val();
-          if (!selectedCourse) {
-            setVideoProgress(progress);
-          }
+          setVideoProgress(progress);
           // Calculate and set user progress stats after loading
           let completed = 0;
           let inProgress = 0;
@@ -413,19 +407,19 @@ const Training = () => {
             inProgress
           }));
         } else {
-          if (!selectedCourse) {
-            setVideoProgress({});
-          }
+          setVideoProgress({});
           setUserProgress(up => ({ ...up, totalCourses: courses.length, completed: 0, inProgress: 0 }));
         }
       }
     };
     fetchProgress();
     // Optionally, listen for auth state changes if needed
-  }, [courses, selectedCourse]);
+  }, [courses]);
 
+  // Fetch real user progress stats from Firebase
   useEffect(() => {
     const fetchUserProgress = async () => {
+      setLoadingProgress(true);
       setProgressError(null);
       const user = auth.currentUser;
       if (user) {
@@ -440,11 +434,12 @@ const Training = () => {
           setProgressError('Error fetching progress data.');
         }
       }
+      setLoadingProgress(false);
     };
     fetchUserProgress();
   }, []);
 
-  // Save progress for the current video to Firebase on tab/course change or page unload
+  // Save progress for the current video to Firebase
   const saveCurrentVideoProgress = async (courseId) => {
     const user = auth.currentUser;
     if (user && courseId && videoProgress[courseId]) {
@@ -469,7 +464,7 @@ const Training = () => {
     setActiveTab(tabId);
   };
 
-  // Save progress on page unload or route change
+  // Save progress on page unload
   useEffect(() => {
     const handleBeforeUnload = async () => {
       if (selectedCourse) {
@@ -491,22 +486,16 @@ const Training = () => {
       <TrainingHeader userProgress={userProgress} />
       <TrainingTabs activeTab={activeTab} handleTabChange={handleTabChange} tabDefs={tabDefs} />
       <main className="p-6">
-        {activeTab === 'overview' ? (
-          progressError ? (
+        {activeTab === 'overview' && (
+          loadingProgress ? (
+            <div className="text-center text-gray-500 py-12">Loading your stats...</div>
+          ) : progressError ? (
             <div className="text-center text-red-500 py-12">{progressError}</div>
           ) : (
-            <TrainingOverview 
-              userProgress={userProgress} 
-              courses={courses} 
-              videoProgress={videoProgress} 
-              getTypeIcon={getTypeIcon}
-              onContinueCourse={(course) => {
-                setActiveTab('courses');
-                setSelectedCourse(course);
-              }}
-            />
+            <TrainingOverview userProgress={userProgress} courses={courses} getTypeIcon={getTypeIcon} />
           )
-        ) : activeTab === 'courses' ? (
+        )}
+        {activeTab === 'courses' && (
           <TrainingCourses
             courses={courses}
             selectedCourse={selectedCourse}
@@ -519,9 +508,16 @@ const Training = () => {
             handlePlayerReady={handlePlayerReady}
             handlePlayerStateChange={handlePlayerStateChange}
           />
-        ) : activeTab === 'instructors' ? (
+        )}
+        {activeTab === 'instructors' && (
           <TrainingInstructors instructors={instructors} />
-        ) : null}
+        )}
+        {activeTab === 'paths' && (
+          <TrainingPaths learningPaths={learningPaths} />
+        )}
+        {activeTab === 'progress' && (
+          <TrainingProgress userProgress={userProgress} />
+        )}
       </main>
     </div>
   );

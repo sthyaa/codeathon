@@ -9,7 +9,6 @@ import OperatorDashboard from "./pages/OperatorDashboard.jsx";
 import Training from "./pages/Training.jsx";
 import OperatorLayout from "./components/OperatorLayout";
 import AdminDashboard from "./components/admin/adminDashboard";
-import ResetMachinesButton from "./components/ResetMachinesButton";
 
 const queryClient = new QueryClient();
 
@@ -18,8 +17,6 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      {/* TEMP: Button to reset all machines to initial state, remove after use */}
-      {/* <ResetMachinesButton /> */}
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />

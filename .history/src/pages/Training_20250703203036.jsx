@@ -70,7 +70,9 @@ const Training = () => {
   const tabDefs = [
     { id: 'overview', label: 'Overview', icon: Monitor },
     { id: 'courses', label: 'Courses', icon: BookOpen },
-    { id: 'instructors', label: 'Instructors', icon: Users }
+    { id: 'instructors', label: 'Instructors', icon: Users },
+    { id: 'paths', label: 'Learning Paths', icon: Target },
+    { id: 'progress', label: 'Progress', icon: BarChart3 }
   ];
 
   const learningPaths = [
@@ -393,30 +395,15 @@ const Training = () => {
         const progressSnap = await get(dbRef(db, `users/${user.uid}/videoProgress`));
         if (progressSnap.exists()) {
           const progress = progressSnap.val();
+          // Only update if not currently watching a video (no selectedCourse)
           if (!selectedCourse) {
             setVideoProgress(progress);
           }
-          // Calculate and set user progress stats after loading
-          let completed = 0;
-          let inProgress = 0;
-          for (const course of courses) {
-            const vid = progress[course.id];
-            if (vid) {
-              if (vid.completed === true) completed++;
-              else if (vid.percent > 0 && vid.percent < 100 && vid.completed === false) inProgress++;
-            }
-          }
-          setUserProgress(up => ({
-            ...up,
-            totalCourses: courses.length,
-            completed,
-            inProgress
-          }));
+          // If watching, don't overwrite local progress
         } else {
           if (!selectedCourse) {
             setVideoProgress({});
           }
-          setUserProgress(up => ({ ...up, totalCourses: courses.length, completed: 0, inProgress: 0 }));
         }
       }
     };
@@ -424,8 +411,10 @@ const Training = () => {
     // Optionally, listen for auth state changes if needed
   }, [courses, selectedCourse]);
 
+  // Fetch real user progress stats from Firebase
   useEffect(() => {
     const fetchUserProgress = async () => {
+      setLoadingProgress(true);
       setProgressError(null);
       const user = auth.currentUser;
       if (user) {
@@ -440,6 +429,7 @@ const Training = () => {
           setProgressError('Error fetching progress data.');
         }
       }
+      setLoadingProgress(false);
     };
     fetchUserProgress();
   }, []);
@@ -491,8 +481,10 @@ const Training = () => {
       <TrainingHeader userProgress={userProgress} />
       <TrainingTabs activeTab={activeTab} handleTabChange={handleTabChange} tabDefs={tabDefs} />
       <main className="p-6">
-        {activeTab === 'overview' ? (
-          progressError ? (
+        {activeTab === 'overview' && (
+          loadingProgress ? (
+            <div className="text-center text-gray-500 py-12">Loading your stats...</div>
+          ) : progressError ? (
             <div className="text-center text-red-500 py-12">{progressError}</div>
           ) : (
             <TrainingOverview 
@@ -506,7 +498,8 @@ const Training = () => {
               }}
             />
           )
-        ) : activeTab === 'courses' ? (
+        )}
+        {activeTab === 'courses' && (
           <TrainingCourses
             courses={courses}
             selectedCourse={selectedCourse}
@@ -519,9 +512,16 @@ const Training = () => {
             handlePlayerReady={handlePlayerReady}
             handlePlayerStateChange={handlePlayerStateChange}
           />
-        ) : activeTab === 'instructors' ? (
+        )}
+        {activeTab === 'instructors' && (
           <TrainingInstructors instructors={instructors} />
-        ) : null}
+        )}
+        {activeTab === 'paths' && (
+          <TrainingPaths learningPaths={learningPaths} />
+        )}
+        {activeTab === 'progress' && (
+          <TrainingProgress userProgress={userProgress} />
+        )}
       </main>
     </div>
   );

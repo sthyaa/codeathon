@@ -9,7 +9,7 @@ import OperatorDashboard from "./pages/OperatorDashboard.jsx";
 import Training from "./pages/Training.jsx";
 import OperatorLayout from "./components/OperatorLayout";
 import AdminDashboard from "./components/admin/adminDashboard";
-import ResetMachinesButton from "./components/ResetMachinesButton";
+import PopulateMachinesButton from "./components/PopulateMachinesButton";
 
 const queryClient = new QueryClient();
 
@@ -18,8 +18,8 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      {/* TEMP: Button to reset all machines to initial state, remove after use */}
-      {/* <ResetMachinesButton /> */}
+      {/* TEMP: Button to populate machines in Firebase, remove after use */}
+      <PopulateMachinesButton />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
