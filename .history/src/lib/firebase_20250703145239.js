@@ -30,30 +30,18 @@ export const auth = getAuth(app);
 // Initialize Realtime Database service
 export const db = getDatabase(app);
 
-// Generate random operator ID
-function generateOperatorId() {
-  // Example: OP + 6 random digits
-  return 'OP' + Math.floor(100000 + Math.random() * 900000);
-}
-
 // Sign up function (Realtime DB)
 export async function signUp(email, password, name, role) {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     // Update user profile with display name
     await updateProfile(userCredential.user, { displayName: name });
-    // Generate operatorId if role is operator
-    let operatorId = null;
-    if (role === 'operator') {
-      operatorId = generateOperatorId();
-    }
-    // Store user role and operatorId in Realtime Database
+    // Store user role in Realtime Database
     await set(ref(db, 'users/' + userCredential.user.uid), {
       uid: userCredential.user.uid,
       email,
       name,
-      role,
-      id: operatorId // Will be null for admin, set for operator
+      role
     });
     return { user: userCredential.user, error: null };
   } catch (error) {
@@ -106,15 +94,5 @@ export async function getUserProfile(uid) {
     }
   } catch (error) {
     return { profile: null, error: error.message };
-  }
-}
-
-// Logout function
-export async function logout() {
-  try {
-    await auth.signOut();
-    return { success: true, error: null };
-  } catch (error) {
-    return { success: false, error: error.message };
   }
 }

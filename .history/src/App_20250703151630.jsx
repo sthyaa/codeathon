@@ -7,7 +7,6 @@ import Index from "./pages/Index.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import OperatorDashboard from "./pages/OperatorDashboard.jsx";
 import Training from "./pages/Training.jsx";
-import OperatorLayout from "./components/OperatorLayout";
 
 const queryClient = new QueryClient();
 
@@ -19,22 +18,8 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route
-            path="/operator"
-            element={
-              <OperatorLayout>
-                <OperatorDashboard />
-              </OperatorLayout>
-            }
-          />
-          <Route
-            path="/training"
-            element={
-              <OperatorLayout>
-                <Training />
-              </OperatorLayout>
-            }
-          />
+          <Route path="/operator" element={<OperatorDashboard />} />
+          <Route path="/training" element={<Training />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

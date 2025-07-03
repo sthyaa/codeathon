@@ -108,13 +108,3 @@ export async function getUserProfile(uid) {
     return { profile: null, error: error.message };
   }
 }
-
-// Logout function
-export async function logout() {
-  try {
-    await auth.signOut();
-    return { success: true, error: null };
-  } catch (error) {
-    return { success: false, error: error.message };
-  }
-}
