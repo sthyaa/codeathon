@@ -8,7 +8,7 @@ import NotFound from "./pages/NotFound.jsx";
 import OperatorDashboard from "./pages/OperatorDashboard.jsx";
 import Training from "./pages/Training.jsx";
 import OperatorLayout from "./components/OperatorLayout";
-import AdminDashboard from "./components/admin/adminDashboard";
+import AdminDashboard from "./components/admin/AdminDashboard";
 
 const queryClient = new QueryClient();
 
