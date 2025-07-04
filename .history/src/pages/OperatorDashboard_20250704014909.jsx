@@ -1,7 +1,7 @@
 // OperatorDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { Award, Target, Zap, Fuel, Timer, Bell, Calendar, Camera, MessageSquare, BookOpen, BarChart3, Shield, User, Menu, Thermometer, Gauge, Battery, Clock } from 'lucide-react';
-import { getUserProfile, logout, updateOperatorLevel } from '@/lib/firebase';
+import { getUserProfile, logout } from '@/lib/firebase';
 import { getAuth } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { ref, onValue } from 'firebase/database';
@@ -48,47 +48,29 @@ const OperatorDashboard = () => {
     const unsubscribe = onValue(tasksRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        // Show all tasks for this operator (including completed)
-        const operatorTasks = Object.entries(data)
-          .filter(([taskId, task]) => task.operatorId === operatorData.id)
-          .map(([taskId, task]) => ({ ...task, taskId }));
-        setTodayTasks(operatorTasks);
-        // Notification logic with localStorage (only for not completed)
-        const notifiedKey = `notifiedTasks_${operatorData.id}`;
-        let notifiedTasks = [];
-        try {
-          notifiedTasks = JSON.parse(localStorage.getItem(notifiedKey)) || [];
-        } catch { notifiedTasks = []; }
-        operatorTasks.forEach(task => {
-          if (task.status === 'completed') return;
-          const alreadyNotified = notifiedTasks.includes(task.taskId);
-          if (!alreadyNotified) {
-            toast.custom((t) => (
-              <div
-                onClick={() => {
-                  setTaskPopup({ ...task });
-                  toast.dismiss(t.id);
-                  // Mark as notified when viewed
-                  const updatedNotified = [...new Set([...notifiedTasks, task.taskId])];
-                  localStorage.setItem(notifiedKey, JSON.stringify(updatedNotified));
-                }}
-                className="cursor-pointer bg-yellow-400 border-2 border-black px-4 py-3 rounded-lg shadow-lg text-black text-lg font-bold hover:bg-yellow-300 transition"
-              >
-                📢 New Task Assigned! Click to View
-              </div>
-            ));
-            // Mark as notified immediately after showing notification
-            notifiedTasks.push(task.taskId);
-            localStorage.setItem(notifiedKey, JSON.stringify([...new Set(notifiedTasks)]));
+        Object.entries(data).forEach(([taskId, task]) => {
+          if (task.operatorId === operatorData.id && task.status !== 'completed') {
+            const alreadyExists = todayTasks.some(t => t.taskId === taskId);
+            if (!alreadyExists) {
+              toast.custom((t) => (
+                <div
+                  onClick={() => {
+                    setTaskPopup({ ...task, taskId });
+                    toast.dismiss(t.id);
+                  }}
+                  className="cursor-pointer bg-yellow-400 border-2 border-black px-4 py-3 rounded-lg shadow-lg text-black text-lg font-bold hover:bg-yellow-300 transition"
+                >
+                  📢 New Task Assigned! Click to View
+                </div>
+              ));
+            }
           }
         });
-      } else {
-        setTodayTasks([]);
       }
     });
 
     return () => unsubscribe();
-  }, [operatorData]);
+  }, [operatorData, todayTasks]);
 
   const machineMetrics = {
     fuelLevel: 78,
@@ -174,78 +156,59 @@ const OperatorDashboard = () => {
                 <p><strong>Priority:</strong> {task.priority || 'N/A'}</p>
                 <p><strong>Estimated Time:</strong> {task.estimatedTime || 'N/A'}</p>
                 <div className="w-full bg-gray-200 rounded-full h-4 mt-2">
-                  <div className="bg-yellow-400 h-4 rounded-full" style={{ width: `${task.progress || (task.status === 'completed' ? 100 : 0)}%` }} />
+                  <div className="bg-yellow-400 h-4 rounded-full" style={{ width: `${task.progress || 0}%` }} />
                 </div>
-                {task.status === 'completed' ? (
-                  <div className="mt-3 text-green-700 font-bold text-center">Completed</div>
-                ) : (
-                  (task.progress || 0) < 100 && (
-                    <button
-                      onClick={async () => {
-                        // Update local state
-                        const updated = todayTasks.map(t =>
-                          t.taskId === task.taskId ? { ...t, progress: 100 } : t
-                        );
-                        setTodayTasks(updated);
-                        // Update Firebase: set status to 'completed' and completedBy to operator name
-                        try {
-                          const { id: operatorId, name: operatorName } = operatorData || {};
-                          if (task.taskId) {
-                            const { ref: dbRef, set: dbSet, update: dbUpdate, get: dbGet } = await import('firebase/database');
-                            const { db } = await import('@/lib/firebase');
-                            const taskRef = dbRef(db, `tasks/${task.taskId}`);
-                            await dbSet(taskRef, {
-                              ...task,
-                              status: 'completed',
-                              completedBy: operatorName || 'Operator',
-                              progress: 100
-                            });
-                            // Update machine data
-                            if (task.machineId) {
-                              const machineRef = dbRef(db, `machines/${task.machineId}`);
-                              // Get current machine data
-                              const snap = await dbGet(machineRef);
-                              if (snap.exists()) {
-                                const machine = snap.val();
-                                // Simulate new values (increment or randomize for demo)
-                                const newFuelUsed = (machine.fuelUsed || 0) + Math.floor(Math.random() * 10) + 5;
-                                const newLoadCycles = (machine.loadCycles || 0) + Math.floor(Math.random() * 5) + 1;
-                                const newIdlingTime = (machine.idlingTime || 0) + Math.floor(Math.random() * 3) + 1;
-                                await dbUpdate(machineRef, {
-                                  fuelUsed: newFuelUsed,
-                                  loadCycles: newLoadCycles,
-                                  idlingTime: newIdlingTime,
-                                  status: 'idle',
-                                  assignedoperatorid: '',
-                                  currenttaskId: ''
-                                });
-                              }
-                            }
-                            // Update operator's numberOfTasksCompleted and level
-                            if (operatorId) {
-                              // Get current numberOfTasksCompleted
-                              const userRef = dbRef(db, `users/${operatorId}`);
-                              const userSnap = await dbGet(userRef);
-                              if (userSnap.exists()) {
-                                const user = userSnap.val();
-                                const newCount = (user.numberOfTasksCompleted || 0) + 1;
-                                await updateOperatorLevel(operatorId, newCount);
-                                // Fetch updated profile and update state
-                                const { getUserProfile } = await import('@/lib/firebase');
-                                const { profile } = await getUserProfile(operatorId);
-                                if (profile) setOperatorData(profile);
-                              }
+                {(task.progress || 0) < 100 && (
+                  <button
+                    onClick={async () => {
+                      // Update local state
+                      const updated = todayTasks.map(t =>
+                        t.taskId === task.taskId ? { ...t, progress: 100 } : t
+                      );
+                      setTodayTasks(updated);
+                      // Update Firebase: set status to 'completed' and completedBy to operator name
+                      try {
+                        const { id: operatorId, name: operatorName } = operatorData || {};
+                        if (task.taskId) {
+                          const { ref: dbRef, set: dbSet, update: dbUpdate, get: dbGet } = await import('firebase/database');
+                          const { db } = await import('@/lib/firebase');
+                          const taskRef = dbRef(db, `tasks/${task.taskId}`);
+                          await dbSet(taskRef, {
+                            ...task,
+                            status: 'completed',
+                            completedBy: operatorName || 'Operator',
+                            progress: 100
+                          });
+                          // Update machine data
+                          if (task.machineId) {
+                            const machineRef = dbRef(db, `machines/${task.machineId}`);
+                            // Get current machine data
+                            const snap = await dbGet(machineRef);
+                            if (snap.exists()) {
+                              const machine = snap.val();
+                              // Simulate new values (increment or randomize for demo)
+                              const newFuelUsed = (machine.fuelUsed || 0) + Math.floor(Math.random() * 10) + 5;
+                              const newLoadCycles = (machine.loadCycles || 0) + Math.floor(Math.random() * 5) + 1;
+                              const newIdlingTime = (machine.idlingTime || 0) + Math.floor(Math.random() * 3) + 1;
+                              await dbUpdate(machineRef, {
+                                fuelUsed: newFuelUsed,
+                                loadCycles: newLoadCycles,
+                                idlingTime: newIdlingTime,
+                                status: 'idle',
+                                assignedoperatorid: '',
+                                currenttaskId: ''
+                              });
                             }
                           }
-                        } catch (err) {
-                          toast.error('Failed to update task or machine status.');
                         }
-                      }}
-                      className="mt-3 bg-yellow-400 text-black px-4 py-2 rounded-lg border-2 border-black font-medium hover:bg-yellow-300"
-                    >
-                      Mark as Completed
-                    </button>
-                  )
+                      } catch (err) {
+                        toast.error('Failed to update task or machine status.');
+                      }
+                    }}
+                    className="mt-3 bg-yellow-400 text-black px-4 py-2 rounded-lg border-2 border-black font-medium hover:bg-yellow-300"
+                  >
+                    Mark as Completed
+                  </button>
                 )}
               </div>
             ))}

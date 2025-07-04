@@ -132,17 +132,9 @@ Reply only with the relevant safety message or alert.`;
     }
   };
 
-  // Debounce Gemini API call
-  const debounceRef = useRef();
-  // Re-run AI suggestion on metric change (debounced)
+  // Re-run AI suggestion on metric change
   useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      generateAISuggestion();
-    }, 1000); // 1 second debounce
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
+    generateAISuggestion();
     // eslint-disable-next-line
   }, [seatBeltFastened, machineRunning, speed, obstacles, idleTime, loadCycles, engineHours, fuelUsed]);
 

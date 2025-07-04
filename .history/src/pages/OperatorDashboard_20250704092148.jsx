@@ -230,10 +230,6 @@ const OperatorDashboard = () => {
                                 const user = userSnap.val();
                                 const newCount = (user.numberOfTasksCompleted || 0) + 1;
                                 await updateOperatorLevel(operatorId, newCount);
-                                // Fetch updated profile and update state
-                                const { getUserProfile } = await import('@/lib/firebase');
-                                const { profile } = await getUserProfile(operatorId);
-                                if (profile) setOperatorData(profile);
                               }
                             }
                           }

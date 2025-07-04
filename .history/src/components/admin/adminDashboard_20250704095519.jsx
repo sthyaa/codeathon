@@ -24,7 +24,7 @@ const AdminDashboard = () => {
     machineId: '',
     operatorId: '',
     location: '',
-    priority: 'Normal' // Add priority field with default value
+    priority: '' // Add priority field
   });
   const [predictedTime, setPredictedTime] = useState(null);
   const [predicting, setPredicting] = useState(false);
@@ -146,8 +146,6 @@ const AdminDashboard = () => {
     }
   };
 
-  const PRIORITY_OPTIONS = ['High', 'Normal', 'Low'];
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setTaskForm(prev => ({ ...prev, [name]: value }));
@@ -175,7 +173,7 @@ const AdminDashboard = () => {
 
         // eslint-disable-next-line no-console
         console.log(`🔔 Notify Operator ${operatorId}: New job assigned`);
-        setTaskForm({ taskName: '', machineId: '', operatorId: '', location: '', priority: 'Normal' });
+        setTaskForm({ taskName: '', machineId: '', operatorId: '', location: '', priority: '' });
         setShowTaskForm(false);
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -234,13 +232,11 @@ const AdminDashboard = () => {
               operators={operators}
               predictedTime={predictedTime}
               predicting={predicting}
-              PRIORITY_OPTIONS={PRIORITY_OPTIONS} // Pass priority options to modal
             />
             <ScheduledTasksList
               tasks={tasks}
               handleDeleteTask={handleDeleteTask}
               setActiveTab={setActiveTab}
-              showCompletedFadeout // Pass prop to show fadeout for completed tasks
             />
           </div>
         )}

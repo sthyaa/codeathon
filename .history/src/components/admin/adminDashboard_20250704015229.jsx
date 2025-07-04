@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ref, push, set, onValue, remove } from 'firebase/database';
-import { db } from '@/lib/firebase';
+import { db, logout } from '@/lib/firebase';
+import { getAuth } from 'firebase/auth';
 import axios from 'axios';
 import ResetMachinesButton from '../ResetMachinesButton';
+import toast from 'react-hot-toast';
 
 import {
   Calendar,
@@ -31,6 +33,7 @@ const AdminDashboard = () => {
   });
   const [predictedTime, setPredictedTime] = useState(null);
   const [predicting, setPredicting] = useState(false);
+  const [adminUid, setAdminUid] = useState(null);
 
   const navigate = useNavigate();
 
@@ -41,14 +44,19 @@ const AdminDashboard = () => {
   }
 
   useEffect(() => {
+    // Get current admin UID
+    const auth = getAuth();
+    setAdminUid(auth.currentUser?.uid || null);
+  }, []);
+
+  useEffect(() => {
     const tasksRef = ref(db, 'tasks/');
     const unsubscribe = onValue(tasksRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const taskArray = Object.entries(data).map(([id, value]) => ({
-          id,
-          ...value
-        }));
+        const taskArray = Object.entries(data)
+          .map(([id, value]) => ({ id, ...value }))
+          .filter(task => !adminUid || task.createdBy === adminUid);
         setTasks(taskArray);
       } else {
         setTasks([]);
@@ -83,7 +91,7 @@ const AdminDashboard = () => {
       unsubscribeMachines();
       unsubscribeOperators();
     };
-  }, []);
+  }, [adminUid]);
 
   // Predict task time when all fields are selected
   useEffect(() => {
@@ -133,8 +141,14 @@ const AdminDashboard = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taskForm.taskName, taskForm.machineId, taskForm.operatorId]);
 
-  const handleLogout = () => {
-    navigate('/');
+  const handleLogout = async () => {
+    const result = await logout();
+    if (result.success) {
+      toast.success('Logged out successfully');
+      navigate('/');
+    } else {
+      toast.error('Logout failed: ' + result.error);
+    }
   };
 
   const handleInputChange = (e) => {
@@ -157,7 +171,8 @@ const AdminDashboard = () => {
           operatorId,
           location,
           createdAt: new Date().toISOString(),
-          estimatedTime: (typeof predictedTime === 'number' && !isNaN(predictedTime)) ? predictedTime : (Number(predictedTime) || null)
+          estimatedTime: (typeof predictedTime === 'number' && !isNaN(predictedTime)) ? predictedTime : (Number(predictedTime) || null),
+          createdBy: adminUid // Track which admin created this task
         });
 
         // eslint-disable-next-line no-console
