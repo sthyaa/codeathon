@@ -11,14 +11,7 @@ import { getDatabase, ref, set, get, child, update } from 'firebase/database';
 
 // Replace these config values with your actual Firebase project config
 const firebaseConfig = {
-  apiKey: "AIzaSyA0YHfbxhjcBL_jFbO3JSGfxcaYKJaVUio",
-  authDomain: "gesturedelhi-a90bf.firebaseapp.com",
-  databaseURL: "https://gesturedelhi-a90bf-default-rtdb.firebaseio.com",
-  projectId: "gesturedelhi-a90bf",
-  storageBucket: "gesturedelhi-a90bf.appspot.com",
-  messagingSenderId: "744554916020",
-  appId: "1:744554916020:web:dddb66a3da78883845cfe1",
-  measurementId: "G-GGWKNMQXB8"
+  YOUR_FIREBASE_KEY
 };
 
 // Initialize Firebase app
